@@ -1,22 +1,42 @@
 // import { useState } from "react";
 
+import Image from "next/image";
 import Link from "next/link";
+
+// face data
+const fetchMeal = async (id) => {
+  try {
+    const res = await fetch(
+      `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+    );
+    const data = await res.json();
+    return data.meals[0];
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+};
+
+// metadata
+export async function generateMetadata({ params }) {
+  // read route params
+  const { id } = await params;
+
+  // fetch data
+  const SingleMeal = await fetchMeal(id);
+
+  return {
+    title: SingleMeal.strMeal,
+    description: SingleMeal.strInstructions,
+  };
+}
 
 export default async function SingleMealPage({ params }) {
   const { id } = await params;
   // const [meal, setMeal] = useState(null);
   // console.log(meal);
 
-  const fetchMeal = async () => {
-    const res = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
-    );
-    const data = await res.json();
-    return data?.meals[0];
-  };
-
-  const meal = await fetchMeal();
-  // console.log(meal)
+  const meal = await fetchMeal(id);
   if (!meal) {
     return <p className="text-center mt-20">Loading...</p>;
   }
@@ -30,7 +50,7 @@ export default async function SingleMealPage({ params }) {
   return (
     <div className="min-h-screen bg-base-100 p-4 md:p-8">
       {/* back to meal button */}
-      <div className="space-y-4">
+      <div className="space-y-4 mb-10">
         <Link
           href="/meals"
           className="text-center px-4 py-2 rounded bg-blue-700 hover:bg-blue-600"
@@ -41,7 +61,9 @@ export default async function SingleMealPage({ params }) {
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
         {/* Image */}
         <div className="rounded-2xl overflow-hidden shadow-lg">
-          <img
+          <Image
+            width={641}
+            height={641}
             src={meal.strMealThumb}
             alt={meal.strMeal}
             className="w-full h-full object-cover"

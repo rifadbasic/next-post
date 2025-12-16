@@ -7,6 +7,12 @@ export const getPosts = async () => {
   return data;
 };
 
+// metadata
+export const metadata = {
+  title: "Posts Page",
+  description: "A simple Next.js app to learn the basics of Next.js framework.",
+};
+
 export default async function Posts() {
   const posts = await getPosts();
 
